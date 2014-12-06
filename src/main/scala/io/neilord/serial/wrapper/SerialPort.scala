@@ -1,6 +1,8 @@
 package io.neilord.serial.wrapper
 
 import io.neilord.serial.models.SerialPortConfig
+import scala.collection.immutable.Seq
+import akka.actor.ActorRef
 
 trait SerialPort {
   def open(): Boolean
@@ -13,5 +15,8 @@ trait SerialPort {
 
   def isOpen: Boolean
 
-  def readBytes(): Array[Byte]
+  def readBytes(): Seq[Byte]
+
+  def subscribe(actorRef: ActorRef)
+
 }

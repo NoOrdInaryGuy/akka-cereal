@@ -24,7 +24,9 @@ class SerialPortManager(portFactory: SerialPortFactory) extends Actor with Actor
           )
           sender ! PortOpened(serialConfig, handler)
         } recover {
-          case exc: Throwable => sender ! CommandFailed(command, exc)
+          case exc: Throwable => {
+            sender ! CommandFailed(command, exc)
+          }
         }
     }
 }

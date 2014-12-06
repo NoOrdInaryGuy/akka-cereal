@@ -15,7 +15,10 @@ import io.neilord.serial.wrapper.SerialPort
 class SerialPortSubscriptionManager(port: SerialPort) extends Actor with ActorLogging {
 
   private val subscribers = mutable.HashSet[ActorRef]()
-  val lineReader = context.system.actorOf(Props(classOf[LineReader], port, self), s"line-reader-${port.name}")
+
+  val escapedName = SerialPortManager.escapePort(port.name)
+  val bytesReader = context.system.actorOf(Props(classOf[BytesReader], port, self), s"bytes-reader-$escapedName")
+  port.subscribe(bytesReader)
 
   private def tellAllSubscribers(msg: Any) = {
     subscribers.foreach { subscriber =>
@@ -34,9 +37,15 @@ class SerialPortSubscriptionManager(port: SerialPort) extends Actor with ActorLo
         case Success(_) => sender ! PortClosed()
       }
     }
-    case Register(actor) =>  subscribers += actor
-    case Unregister(actor) => subscribers -= actor
-    case msg: LineReceived => tellAllSubscribers(msg)
+    case RegisterForBytes(actorRef) =>
+      log.info(s"Adding actor $actorRef to subscribers")
+      subscribers += actorRef
+    case Unregister(actorRef) =>
+      log.info(s"Removing actor $actorRef to subscribers")
+      subscribers -= actorRef
+    case msg: BytesReceived => {
+      tellAllSubscribers(msg)
+    }
   }
 
   override def postStop() {

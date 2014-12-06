@@ -1,6 +1,7 @@
 package io.neilord.serial.models
 
 import akka.actor.ActorRef
+import scala.collection.immutable.Seq
 
 object Messages {
 
@@ -10,7 +11,7 @@ object Messages {
 
   case class OpenPort(settings: SerialPortConfig) extends Command
 
-  case class PortOpened(settings: SerialPortConfig, handler: ActorRef) extends Notification
+  case class PortOpened(settings: SerialPortConfig, subscriptionManager: ActorRef) extends Notification
 
   case class ClosePort() extends Command
 
@@ -18,10 +19,14 @@ object Messages {
 
   case class CommandFailed(command: Command, cause: Throwable)
 
-  case class Register(actor: ActorRef) extends Command
+  case class RegisterForBytes(actor: ActorRef) extends Command
 
   case class Unregister(actor: ActorRef) extends Command
 
   case class LineReceived(content: String) extends Notification
+
+  case class BytesReceived(content: Seq[Byte]) extends Notification
+
+  case object DataAvailable extends Notification
 
 }
