@@ -17,5 +17,6 @@ libraryDependencies ++= Seq(
   "net.ceedubs" %% "ficus" % "1.1.1",
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.mockito" % "mockito-core" % "1.10.8"
+  "org.mockito" % "mockito-core" % "1.10.8",
+  "org.scream3r" % "jssc" % "2.8.0"
 )
