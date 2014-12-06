@@ -1,4 +1,4 @@
-package io.neilord.currentcost
+package io.neilord.samples
 
 import akka.actor._
 import io.neilord.serial.SerialPortManager
@@ -8,7 +8,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import net.ceedubs.ficus.Ficus._
 import io.neilord.serial.models.SerialPortConfig
 
-object CurrentCostApplication extends App {
+object SampleApplication extends App {
   val config: Config = ConfigFactory.load()
 
   val deviceName = config.as[String]("serial.port")
@@ -17,15 +17,12 @@ object CurrentCostApplication extends App {
   val stopBits = config.as[Int]("serial.stopBits")
   val parity = config.as[Int]("serial.parity")
 
-  val host = config.as[String]("currentCostClient.kafkaBroker.host")
-  val topic = config.as[String]("currentCostClient.kafkaBroker.topic")
-
   val serialPortFactory: SerialPortFactory = new TestSerialPortFactory
 
   val system = ActorSystem("SerialReaderSystem")
 
   val portManager = system.actorOf(Props(classOf[SerialPortManager], serialPortFactory), "serial-manager")
-  val receiver = system.actorOf(Props(classOf[CurrentCostReadingReceiver], host, topic), "receiver")
+  val receiver = system.actorOf(Props(classOf[SampleReadingReceiver]), "receiver")
 
   portManager.tell(OpenPort(SerialPortConfig(baudRate, dataBits, stopBits, parity, deviceName)), receiver)
 
