@@ -22,7 +22,7 @@ object SampleApplication extends App {
   val system = ActorSystem("SerialReaderSystem")
 
   val portManager = system.actorOf(Props(classOf[SerialPortManager], serialPortFactory), "serial-manager")
-  val receiver = system.actorOf(Props(classOf[SampleReadingReceiver]), "receiver")
+  val receiver = system.actorOf(Props(classOf[SampleSerialDataReceiver]), "receiver")
 
   portManager.tell(OpenPort(SerialPortConfig(baudRate, dataBits, stopBits, parity, deviceName)), receiver)
 

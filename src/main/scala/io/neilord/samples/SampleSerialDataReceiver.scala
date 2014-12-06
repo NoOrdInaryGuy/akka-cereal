@@ -8,7 +8,7 @@ import Messages.PortOpened
 import Messages.CommandFailed
 import java.io.{PipedInputStream, InputStreamReader, BufferedReader, PipedOutputStream}
 
-class SampleReadingReceiver extends Actor with ActorLogging {
+class SampleSerialDataReceiver extends Actor with ActorLogging {
   class LineReader extends Runnable {
     override def run() {
       //TODO Stop using blocking IO here
@@ -26,9 +26,8 @@ class SampleReadingReceiver extends Actor with ActorLogging {
       log.info("ReadingReceiver notified that port is open, so subscribing for bytes")
       subscriptionMgr ! RegisterForBytes(context.self)
     case failed @ CommandFailed(cmd, throwable) => log.error(s"Failed $cmd $throwable")
-    case BytesReceived(content) => {
+    case BytesReceived(content) =>
       pipedOutputStr.write(content.toArray)
-    }
     case msg => log.warning(s"Unknown message received: $msg")
   }
 }
