@@ -2,7 +2,7 @@ package io.neilord.samples
 
 import akka.actor._
 import io.neilord.serial.SerialPortManager
-import io.neilord.serial.factory.{TestSerialPortFactory, SerialPortFactory, JSSCSerialPortFactory}
+import io.neilord.serial.factory.{TestSerialPortFactory, SerialPortFactory}
 import io.neilord.serial.models.Messages.OpenPort
 import com.typesafe.config.{Config, ConfigFactory}
 import net.ceedubs.ficus.Ficus._
