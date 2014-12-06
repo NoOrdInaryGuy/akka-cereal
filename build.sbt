@@ -20,4 +20,3 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "1.10.8",
   "org.scream3r" % "jssc" % "2.8.0"
 )
-
