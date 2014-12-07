@@ -7,26 +7,29 @@ import Messages.OpenPort
 import Messages.PortOpened
 import scala.util.Try
 import Messages.CommandFailed
+import io.neilord.serial.wrapper.SerialPort
+import io.neilord.PropsProvider
 
-class SerialPortManager(portFactory: SerialPortFactory) extends Actor with ActorLogging {
-
-  import SerialPortManager._
+class SerialPortManager(portFactory: SerialPortFactory)
+  extends Actor with ActorLogging {
+  //Want to be able to inject this for testing
+  this: PropsProvider =>
 
   override def receive = {
     case command @ OpenPort(serialConfig) =>
-        val port = portFactory.newInstance(serialConfig.name)
+        val port = portFactory.newInstance(serialConfig.portName)
         Try {
           port.open()
           port.setParameters(serialConfig)
-          val handler = context.system.actorOf(
-            Props(classOf[SerialPortSubscriptionManager], port),
-            name = escapePort(port.name)
+          val handler = context.actorOf(
+            //TODO
+            //SerialPortSubscriptionManager.props(port)
+            //Props(classOf[SerialPortSubscriptionManager], port), escapePort(port.name)
+            getProps(port)
           )
-          sender ! PortOpened(serialConfig, handler)
+          sender ! PortOpened(handler)
         } recover {
-          case exc: Throwable => {
-            sender ! CommandFailed(command, exc)
-          }
+          case exc: Throwable => sender ! CommandFailed(command, exc)
         }
     }
 }

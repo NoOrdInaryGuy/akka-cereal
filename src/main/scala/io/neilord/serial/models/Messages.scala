@@ -11,7 +11,7 @@ object Messages {
 
   case class OpenPort(settings: SerialPortConfig) extends Command
 
-  case class PortOpened(settings: SerialPortConfig, subscriptionManager: ActorRef) extends Notification
+  case class PortOpened(subscriptionManager: ActorRef) extends Notification
 
   case class ClosePort() extends Command
 

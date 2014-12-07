@@ -53,3 +53,9 @@ class SerialPortSubscriptionManager(port: SerialPort) extends Actor with ActorLo
   }
 
 }
+
+object SerialPortSubscriptionManager {
+  def props(port: SerialPort): Props = {
+    Props(new SerialPortSubscriptionManager(port))
+  }
+}
