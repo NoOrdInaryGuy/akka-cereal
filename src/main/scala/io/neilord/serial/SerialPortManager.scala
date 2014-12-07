@@ -8,12 +8,15 @@ import Messages.PortOpened
 import scala.util.Try
 import Messages.CommandFailed
 import io.neilord.serial.wrapper.SerialPort
-import io.neilord.PropsProvider
+import io.neilord.{RealPropsProvider, PropsProvider}
+import scala.reflect.ClassTag
 
-class SerialPortManager(portFactory: SerialPortFactory)
+class SerialPortManager[ChildActor : ClassTag](portFactory: SerialPortFactory)
   extends Actor with ActorLogging {
   //Want to be able to inject this for testing
   this: PropsProvider =>
+
+  val ctag = implicitly[ClassTag[ChildActor]]
 
   override def receive = {
     case command @ OpenPort(serialConfig) =>
@@ -21,12 +24,7 @@ class SerialPortManager(portFactory: SerialPortFactory)
         Try {
           port.open()
           port.setParameters(serialConfig)
-          val handler = context.actorOf(
-            //TODO
-            //SerialPortSubscriptionManager.props(port)
-            //Props(classOf[SerialPortSubscriptionManager], port), escapePort(port.name)
-            getProps(port)
-          )
+          val handler = context.actorOf(getProps(port))
           sender ! PortOpened(handler)
         } recover {
           case exc: Throwable => sender ! CommandFailed(command, exc)
@@ -38,5 +36,9 @@ object SerialPortManager {
   def escapePort(portName: String): String = portName collect {
     case '/' => '-'
     case otherChar => otherChar
+  }
+
+  def apply(serialPortFactory: SerialPortFactory) = {
+    new SerialPortManager[SerialPortSubscriptionManager](serialPortFactory) with RealPropsProvider
   }
 }

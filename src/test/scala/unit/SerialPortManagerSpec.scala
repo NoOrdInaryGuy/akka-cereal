@@ -17,7 +17,9 @@ class SerialPortManagerSpec extends TestKit(ActorSystem("test-registry-spec"))
     "open and set the parameters on a SerialPort, and return a PortOpened msg" when {
       "receiving an OpenPort message" in new SerialPortManagerContext {
         //TODO make TestPropsProvider then make sure it's the right one
-        val serialPortManager = TestActorRef(Props(new SerialPortManager(mockFactory) with RealPropsProvider))
+        val serialPortManager = TestActorRef(
+          Props(new SerialPortManager[SerialPortSubscriptionManager](mockFactory) with RealPropsProvider)
+        )
         serialPortManager ! OpenPort(settings)
 
         Thread.sleep(1000L)
@@ -37,8 +39,9 @@ class SerialPortManagerSpec extends TestKit(ActorSystem("test-registry-spec"))
 
     "send a CommandFailed message" when {
       "an exception is thrown during the command" in new SerialPortManagerExceptionContext {
-        //TODO why does this work without the mixin?
-        val serialPortManager = TestActorRef(Props(classOf[SerialPortManager], mockFactory))
+        val serialPortManager = TestActorRef(
+          Props(new SerialPortManager[SerialPortSubscriptionManager](mockFactory) with RealPropsProvider)
+        )
         val msg = OpenPort(settings)
         serialPortManager ! msg
 
