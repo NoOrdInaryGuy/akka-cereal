@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
 
 class SerialPortManager[ChildActor : ClassTag](portFactory: SerialPortFactory)
   extends Actor with ActorLogging {
-  //Want to be able to inject this for testing
+  //Need to be able to inject this for testing
   this: PropsProvider =>
 
   val ctag = implicitly[ClassTag[ChildActor]]
