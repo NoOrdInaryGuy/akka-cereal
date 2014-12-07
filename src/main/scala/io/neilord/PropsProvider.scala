@@ -1,17 +1,16 @@
 package io.neilord
 
 import akka.actor.Props
-import io.neilord.serial.wrapper.SerialPort
 import scala.reflect._
 
 trait PropsProvider {
-  def getProps(port: SerialPort): Props
+  def getProps(args: Any*): Props
 }
 
 trait RealPropsProvider extends PropsProvider {
   val ctag: ClassTag[_]
 
-  override def getProps(port: SerialPort) = {
-    Props(ctag.runtimeClass, port)
+  override def getProps(args: Any*) = {
+    Props(ctag.runtimeClass, args: _*)
   }
 }
